@@ -1,0 +1,10 @@
+#canvas-container {
+  width: 90%;
+  margin: 0 auto;
+  border-radius: 20px;
+  overflow: hidden;
+}
+
+#canvas-container canvas {
+  display: block;
+}
