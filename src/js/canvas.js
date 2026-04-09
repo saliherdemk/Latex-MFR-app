@@ -1,9 +1,8 @@
-const { invoke } = window.__TAURI__.core;
-
 function setup() {
   const { w, h } = manager.getCanvasDimensions();
   const cnv = createCanvas(w, h);
   cnv.parent("canvas-container");
+  manager.canvas = cnv;
   background(255);
 
   canvas = document.querySelector("canvas");
