@@ -8,7 +8,8 @@
     <title>Tauri App</title>
     <script src="js/p5.min.js" defer></script>
     <script src="js/line.js" defer></script>
-
+    <script src="js/manager.js" defer></script>
+    <script src="js/script.js" defer></script>
     <script src="js/canvas.js" defer></script>
   </head>
 
@@ -16,7 +17,11 @@
     <main class="container">
       <h1>Welcome to Tauri</h1>
 
-      <div id="canvas-container"></div>
+      <div id="pic-container">
+        <div id="canvas-container"></div>
+        <div id="img-container"></div>
+      </div>
+      <input id="import-file-input" type="file" name="" value="" />
     </main>
   </body>
 </html>
