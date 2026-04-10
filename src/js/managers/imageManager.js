@@ -36,6 +36,21 @@ class ImageManager {
     this.displayImage(convertFileSrc(path));
   }
 
+  async getImageBase64() {
+    const img = this.preview.querySelector("img");
+    if (!img) return null;
+    if (img.src.startsWith("data:")) {
+      return img.src.split(",")[1];
+    }
+    const resp = await fetch(img.src);
+    const blob = await resp.blob();
+    return new Promise((resolve) => {
+      const reader = new FileReader();
+      reader.onload = (e) => resolve(e.target.result.split(",")[1]);
+      reader.readAsDataURL(blob);
+    });
+  }
+
   _bindEvents() {
     const { listen } = window.__TAURI__.event;
 

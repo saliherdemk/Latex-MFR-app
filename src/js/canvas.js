@@ -12,10 +12,20 @@ function setup() {
   });
 }
 
+function mousePressed() {
+  if (mouseX >= 0 && mouseX <= width && mouseY >= 0 && mouseY <= height) {
+    canvasManager.drawingActive = true;
+  }
+}
+
+function mouseReleased() {
+  canvasManager.drawingActive = false;
+}
+
 function draw() {
   background(255);
 
-  if (mouseIsPressed && mouseButton === LEFT) {
+  if (mouseIsPressed && mouseButton === LEFT && canvasManager.drawingActive) {
     canvasManager.setCurrentStroke(mouseX, mouseY, pmouseX, pmouseY);
   } else {
     canvasManager.addStroke();

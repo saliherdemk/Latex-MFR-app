@@ -1,5 +1,6 @@
 const canvasManager = new CanvasManager();
 const imageManager = new ImageManager();
+const modelManager = new ModelManager();
 const manager = new Manager();
 
 const { invoke } = window.__TAURI__.core;
@@ -26,4 +27,9 @@ document.getElementById("switch-canvas").addEventListener("click", () => {
 
 document.getElementById("switch-img").addEventListener("click", () => {
   manager.showImage();
+});
+
+document.getElementById("convert-btn").addEventListener("click", async () => {
+  const path = await manager.convert();
+  console.log("converted image path:", path);
 });

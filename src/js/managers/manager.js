@@ -18,4 +18,16 @@ class Manager {
     this.canvasContainer.style.display = "none";
     this.imgContainer.style.display = "flex";
   }
+
+  async convert() {
+    const { invoke } = window.__TAURI__.core;
+    let base64;
+    if (this.canvasContainer.style.display !== "none") {
+      base64 = canvasManager.getImageBase64();
+    } else {
+      base64 = await imageManager.getImageBase64();
+    }
+    if (!base64) return null;
+    return invoke("save_temp_image", { base64Data: base64 });
+  }
 }

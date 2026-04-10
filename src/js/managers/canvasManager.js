@@ -58,6 +58,11 @@ class CanvasManager {
     return { w, h };
   }
 
+  getImageBase64() {
+    const dataUrl = this.canvas.elt.toDataURL("image/png");
+    return dataUrl.split(",")[1];
+  }
+
   draw() {
     for (const stroke of this.strokes) {
       for (const segment of stroke) segment.show();

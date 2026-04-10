@@ -66,17 +66,76 @@
   object-fit: contain;
 }
 
-#controls-container {
+.controls-container {
   width: 90%;
   display: flex;
   margin: 10px auto;
   gap: 10px;
 }
 
-#controls-container > button {
+.controls-container > * {
   flex: 1;
 }
 
 #import-file-input {
   display: none;
+}
+
+#delete-model-container {
+  display: none;
+  width: 90%;
+  margin: 0 auto 4px;
+}
+
+#delete-model-container.visible {
+  display: block;
+}
+
+#delete-model-btn {
+  background-color: #5a1a1a98;
+  color: #e05252;
+  border-color: #7a2a2a;
+}
+
+#delete-model-btn:hover {
+  border-color: #e05252;
+}
+
+#download-progress-container {
+  display: none;
+  width: 90%;
+  margin: 0 auto 10px;
+  align-items: center;
+  gap: 10px;
+}
+
+#download-progress-container.active,
+#download-progress-container.error {
+  display: flex;
+}
+
+#download-error {
+  display: none;
+  font-size: 0.75rem;
+  color: #e05252;
+}
+
+#download-progress-container.error #download-progress,
+#download-progress-container.error #download-progress-label {
+  display: none;
+}
+
+#download-progress-container.error #download-error {
+  display: block;
+}
+
+#download-progress {
+  flex: 1;
+  height: 6px;
+}
+
+#download-progress-label {
+  font-size: 0.75rem;
+  white-space: nowrap;
+  color: #888;
 }

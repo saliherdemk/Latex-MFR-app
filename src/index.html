@@ -8,9 +8,10 @@
     <title>Tauri App</title>
     <script src="js/p5.min.js" defer></script>
     <script src="js/line.js" defer></script>
-    <script src="js/canvasManager.js" defer></script>
-    <script src="js/imageManager.js" defer></script>
-    <script src="js/manager.js" defer></script>
+    <script src="js/managers/canvasManager.js" defer></script>
+    <script src="js/managers/imageManager.js" defer></script>
+    <script src="js/managers/modelManager.js" defer></script>
+    <script src="js/managers/manager.js" defer></script>
     <script src="js/script.js" defer></script>
     <script src="js/canvas.js" defer></script>
   </head>
@@ -18,6 +19,10 @@
   <body>
     <main class="container">
       <h1>Welcome to Tauri</h1>
+      <div class="controls-container">
+        <button id="switch-canvas" type="button">Canvas</button>
+        <button id="switch-img" type="button">Image</button>
+      </div>
 
       <div id="pic-container">
         <div id="canvas-container"></div>
@@ -27,10 +32,19 @@
           <div id="preview"></div>
         </div>
       </div>
-      <div id="controls-container">
-        <button id="switch-canvas" type="button">Canvas</button>
-        <button id="switch-img" type="button">Image</button>
+      <div class="controls-container">
+        <select id="model-select"></select>
+        <button id="convert-btn" type="button">Convert</button>
       </div>
+      <div id="delete-model-container">
+        <button id="delete-model-btn" type="button">Delete Model</button>
+      </div>
+      <div id="download-progress-container">
+        <progress id="download-progress" value="0" max="100"></progress>
+        <span id="download-progress-label"></span>
+        <span id="download-error"></span>
+      </div>
+
       <input id="import-file-input" type="file" name="" value="" />
     </main>
   </body>
