@@ -6,6 +6,8 @@
     <link rel="stylesheet" href="styles/styles.css" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Tauri App</title>
+    <link rel="stylesheet" href="styles/katex.min.css" />
+    <script src="js/katex.min.js" defer></script>
     <script src="js/p5.min.js" defer></script>
     <script src="js/line.js" defer></script>
     <script src="js/managers/canvasManager.js" defer></script>
@@ -46,6 +48,14 @@
       </div>
 
       <input id="import-file-input" type="file" name="" value="" />
+
+      <div id="result-container">
+        <div id="latex-input-row">
+          <textarea id="latex-input" readonly></textarea>
+          <button id="copy-btn" type="button">Copy</button>
+        </div>
+        <div id="latex-preview"></div>
+      </div>
     </main>
   </body>
 </html>

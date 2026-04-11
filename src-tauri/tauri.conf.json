@@ -33,6 +33,6 @@
       "icons/icon.icns",
       "icons/icon.ico"
     ],
-    "resources": ["models/pp-formulanet_plus-l.onnx"]
+    "resources": ["models/pp-formulanet_plus-l.onnx", "models/unimernet_tokenizer.json"]
   }
 }

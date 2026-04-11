@@ -30,6 +30,5 @@ document.getElementById("switch-img").addEventListener("click", () => {
 });
 
 document.getElementById("convert-btn").addEventListener("click", async () => {
-  const path = await manager.convert();
-  console.log("converted image path:", path);
+  manager.convert();
 });

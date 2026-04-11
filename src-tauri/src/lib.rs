@@ -1,3 +1,5 @@
+mod models;
+
 use base64::{engine::general_purpose, Engine as _};
 use ort::session::Session;
 use std::collections::HashMap;
@@ -47,6 +49,7 @@ struct DownloadProgress {
 pub struct ModelRegistry {
     pub sessions: Mutex<HashMap<String, Session>>,
     pub models_dir: PathBuf,
+    pub tokenizer_path: PathBuf,
 }
 
 #[tauri::command]
@@ -180,6 +183,32 @@ fn delete_model(id: String, state: tauri::State<ModelRegistry>) -> Result<(), St
     Ok(())
 }
 
+#[tauri::command]
+fn convert(
+    model_id: String,
+    image_path: String,
+    state: tauri::State<ModelRegistry>,
+) -> Result<String, String> {
+    let mut sessions = state.sessions.lock().unwrap();
+    let session = sessions
+        .get_mut(&model_id)
+        .ok_or_else(|| format!("Model not loaded: {}", model_id))?;
+
+    match model_id.as_str() {
+        "pp-formulanet_plus-l" => models::ppformulanet(
+            session,
+            &image_path,
+            state.tokenizer_path.to_str().unwrap_or(""),
+        ),
+        "unimernet" => models::unimernet(
+            session,
+            &image_path,
+            state.tokenizer_path.to_str().unwrap_or(""),
+        ),
+        _ => Err(format!("Unknown model: {}", model_id)),
+    }
+}
+
 #[cfg_attr(mobile, tauri::mobile_entry_point)]
 pub fn run() {
     tauri::Builder::default()
@@ -191,6 +220,11 @@ pub fn run() {
                 tauri::path::BaseDirectory::Resource,
             )?;
 
+            let tokenizer_path = app.path().resolve(
+                "models/unimernet_tokenizer.json",
+                tauri::path::BaseDirectory::Resource,
+            )?;
+
             let models_dir = app.path().app_data_dir()?.join("models");
             std::fs::create_dir_all(&models_dir)?;
 
@@ -198,9 +232,19 @@ pub fn run() {
             let mut sessions = HashMap::new();
             sessions.insert("pp-formulanet_plus-l".to_string(), session);
 
+            for entry in CATALOG.iter().filter(|e| e.url.is_some()) {
+                let path = models_dir.join(entry.filename);
+                if path.exists() {
+                    if let Ok(s) = Session::builder().and_then(|mut b| b.commit_from_file(&path)) {
+                        sessions.insert(entry.id.to_string(), s);
+                    }
+                }
+            }
+
             app.manage(ModelRegistry {
                 sessions: Mutex::new(sessions),
                 models_dir,
+                tokenizer_path,
             });
 
             Ok(())
@@ -211,6 +255,7 @@ pub fn run() {
             get_models,
             download_model,
             delete_model,
+            convert,
         ])
         .run(tauri::generate_context!())
         .expect("error while running tauri application");
