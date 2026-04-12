@@ -2,10 +2,10 @@ use image::imageops::FilterType;
 use ort::session::Session;
 use std::collections::HashMap;
 
-pub fn gemini_convert(base64: &str, api_key: &str) -> Result<String, String> {
+pub fn gemini_convert(base64: &str, api_key: &str, model: &str) -> Result<String, String> {
     let url = format!(
-        "https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent?key={}",
-        api_key
+        "https://generativelanguage.googleapis.com/v1beta/models/{}:generateContent?key={}",
+        model, api_key
     );
 
     let body = serde_json::json!({
@@ -26,18 +26,37 @@ pub fn gemini_convert(base64: &str, api_key: &str) -> Result<String, String> {
 
     let json_bytes = serde_json::to_vec(&body).map_err(|e| e.to_string())?;
 
-    let mut response = ureq::post(&url)
+    let agent = ureq::config::Config::builder()
+        .http_status_as_error(false)
+        .build()
+        .new_agent();
+
+    let mut response = agent
+        .post(&url)
         .header("Content-Type", "application/json")
         .send(&json_bytes)
-        .map_err(|e: ureq::Error| e.to_string())?;
+        .map_err(|e| match e {
+            ureq::Error::HostNotFound => "No internet connection".to_string(),
+            ureq::Error::Io(_) => "No internet connection".to_string(),
+            other => other.to_string(),
+        })?;
+
+    let status = response.status();
 
     let data: serde_json::Value =
         serde_json::from_reader(response.body_mut().as_reader()).map_err(|e| e.to_string())?;
 
+    if !status.is_success() {
+        if let Some(msg) = data["error"]["message"].as_str() {
+            return Err(msg.to_string());
+        }
+        return Err(format!("HTTP {}: {}", status.as_u16(), data));
+    }
+
     data["candidates"][0]["content"]["parts"][0]["text"]
         .as_str()
         .map(|s| s.trim().to_string())
-        .ok_or_else(|| "Unexpected Gemini response format".to_string())
+        .ok_or_else(|| format!("Unexpected response: {}", data))
 }
 
 const PIX2TEXT_INPUT_SIZE: u32 = 384;

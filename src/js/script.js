@@ -1,16 +1,21 @@
+const { invoke } = window.__TAURI__.core;
+const getElementById = (id) => document.getElementById(id);
+
+const switchCanvas = getElementById("switch-canvas");
+const switchImg = getElementById("switch-img");
+const convertBtn = getElementById("convert-btn");
+
 const canvasManager = new CanvasManager();
 const imageManager = new ImageManager();
 const modelManager = new ModelManager();
 const manager = new Manager();
 
-const { invoke } = window.__TAURI__.core;
-
 document.addEventListener("keydown", (e) => {
-  if (e.ctrlKey && e.key === "z") {
+  if (e.ctrlKey && e.key === "z" && !["INPUT", "TEXTAREA"].includes(document.activeElement.tagName)) {
     e.preventDefault();
     canvasManager.undo();
   }
-  if (e.ctrlKey && e.key === "v") {
+  if (e.ctrlKey && e.key === "v" && !["INPUT", "TEXTAREA"].includes(document.activeElement.tagName)) {
     e.preventDefault();
     imageManager.setState("loading");
     invoke("read_clipboard_image")
@@ -21,14 +26,14 @@ document.addEventListener("keydown", (e) => {
   }
 });
 
-document.getElementById("switch-canvas").addEventListener("click", () => {
+switchCanvas.addEventListener("click", () => {
   manager.showCanvas();
 });
 
-document.getElementById("switch-img").addEventListener("click", () => {
+switchImg.addEventListener("click", () => {
   manager.showImage();
 });
 
-document.getElementById("convert-btn").addEventListener("click", async () => {
+convertBtn.addEventListener("click", async () => {
   manager.convert();
 });

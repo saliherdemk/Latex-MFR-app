@@ -1,13 +1,15 @@
 class Manager {
   constructor() {
-    this.canvasContainer = document.getElementById("canvas-container");
-    this.imgContainer = document.getElementById("img-container");
-    this.resultContainer = document.getElementById("result-container");
-    this.latexInput = document.getElementById("latex-input");
-    this.latexPreview = document.getElementById("latex-preview");
-    this.convertSpinner = document.getElementById("convert-spinner");
-    this.convertBtn = document.getElementById("convert-btn");
-    this.copyBtn = document.getElementById("copy-btn");
+    this.canvasContainer = getElementById("canvas-container");
+    this.imgContainer = getElementById("img-container");
+    this.resultContainer = getElementById("result-container");
+    this.errorMessage = getElementById("error-message");
+    this.latexInput = getElementById("latex-input");
+    this.latexPreview = getElementById("latex-preview");
+    this.convertSpinner = getElementById("convert-spinner");
+    this.convertBtn = getElementById("convert-btn");
+    this.copyBtn = getElementById("copy-btn");
+
     this.copyBtn.addEventListener("click", () => {
       navigator.clipboard.writeText(this.latexInput.value);
     });
@@ -28,7 +30,14 @@ class Manager {
     this.imgContainer.style.display = "flex";
   }
 
+  showError(msg) {
+    this.errorMessage.textContent = msg;
+    this.errorMessage.style.display = "block";
+    this.resultContainer.classList.remove("visible");
+  }
+
   showResult(latex) {
+    this.errorMessage.style.display = "none";
     this.latexInput.value = latex;
     this.resultContainer.classList.add("visible");
     try {
@@ -52,21 +61,31 @@ class Manager {
 
     this.convertSpinner.classList.add("active");
     this.convertBtn.disabled = true;
+    await new Promise((r) => setTimeout(r, 0));
 
     try {
       const modelId = modelManager.getSelectedId();
 
-      if (modelId === "gemini") {
+      if (modelId.startsWith("gemini")) {
         const apiKey = modelManager.getGeminiApiKey();
         if (!apiKey) {
-          alert("Please set a Gemini API key first.");
+          this.showError("Please set a Gemini API key first.");
           return;
         }
-        const result = await invoke("convert_gemini", { base64, apiKey });
-        this.showResult(result);
+        try {
+          const result = await invoke("convert_gemini", {
+            base64,
+            apiKey,
+            model: modelId,
+          });
+          this.showResult(result);
+        } catch (e) {
+          this.showError(String(e));
+        }
         return;
       }
 
+      await modelManager.ensureLoaded();
       const imagePath = await invoke("save_temp_image", { base64Data: base64 });
       const result = await invoke("convert", { imagePath });
       this.showResult(result);

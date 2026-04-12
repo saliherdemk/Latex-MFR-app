@@ -107,8 +107,18 @@
   display: none;
 }
 
-#api-key-btn {
+#api-key-btn,
+#pix2text-model-btn {
   flex: 0 0 auto;
+}
+
+#pix2text-model-btn.danger {
+  color: #f87171;
+  border-color: rgba(248, 113, 113, 0.4);
+}
+
+#pix2text-model-btn.danger:hover {
+  border-color: #f87171;
 }
 
 #api-key-modal {
@@ -157,6 +167,87 @@
 
 #api-key-close-btn {
   border-color: #444;
+}
+
+#download-modal {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.6);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 100;
+}
+
+#download-modal-box {
+  background: #1a1a1a;
+  border: 1px solid #333;
+  border-radius: 12px;
+  padding: 24px;
+  width: 360px;
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+}
+
+#download-modal-box h3 {
+  margin: 0;
+  font-size: 1rem;
+  color: #f6f6f6;
+}
+
+#download-modal-desc {
+  margin: 0;
+  font-size: 0.875rem;
+  color: #aaa;
+}
+
+#download-modal-progress {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+#download-modal-bar-wrapper {
+  height: 6px;
+  background: #333;
+  border-radius: 3px;
+  overflow: hidden;
+}
+
+#download-modal-bar {
+  height: 100%;
+  width: 0%;
+  background: #f6f6f6;
+  border-radius: 3px;
+  transition: width 0.2s ease;
+}
+
+#download-modal-text {
+  font-size: 0.8rem;
+  color: #aaa;
+}
+
+#download-modal-actions {
+  display: flex;
+  gap: 8px;
+  justify-content: flex-end;
+}
+
+#download-modal-cancel {
+  border-color: #444;
+}
+
+#error-message {
+  width: 90%;
+  margin: 10px auto;
+  padding: 0.6em 0.8em;
+  border-radius: 8px;
+  background: rgba(220, 60, 60, 0.15);
+  border: 1px solid rgba(220, 60, 60, 0.4);
+  color: #f87171;
+  font-size: 0.875rem;
+  word-break: break-word;
 }
 
 #result-container {

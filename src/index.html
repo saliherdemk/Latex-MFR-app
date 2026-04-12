@@ -5,7 +5,7 @@
     <link rel="stylesheet" href="styles/theme.css" />
     <link rel="stylesheet" href="styles/styles.css" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Tauri App</title>
+    <title>LaTeX OCR</title>
     <link rel="stylesheet" href="styles/katex.min.css" />
     <script src="js/katex.min.js" defer></script>
     <script src="js/p5.min.js" defer></script>
@@ -20,7 +20,7 @@
 
   <body>
     <main class="container">
-      <h1>Welcome to Tauri</h1>
+      <h1>LaTeX OCR</h1>
       <div class="controls-container">
         <button id="switch-canvas" type="button">Canvas</button>
         <button id="switch-img" type="button">Image</button>
@@ -40,7 +40,31 @@
         <button id="api-key-btn" type="button" style="display: none">
           API Key
         </button>
+        <button id="pix2text-model-btn" type="button" style="display: none">
+          Download Model
+        </button>
         <button id="convert-btn" type="button">Convert</button>
+      </div>
+
+      <div id="error-message" style="display: none"></div>
+
+      <div id="download-modal" style="display: none">
+        <div id="download-modal-box">
+          <h3>Pix2Text Model Required</h3>
+          <p id="download-modal-desc">
+            The local model needs to be downloaded before use.
+          </p>
+          <div id="download-modal-progress" style="display: none">
+            <div id="download-modal-bar-wrapper">
+              <div id="download-modal-bar"></div>
+            </div>
+            <span id="download-modal-text"></span>
+          </div>
+          <div id="download-modal-actions">
+            <button id="download-modal-btn" type="button">Download</button>
+            <button id="download-modal-cancel" type="button">Cancel</button>
+          </div>
+        </div>
       </div>
 
       <div id="api-key-modal" style="display: none">

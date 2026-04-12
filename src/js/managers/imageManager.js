@@ -1,10 +1,10 @@
 class ImageManager {
   constructor() {
-    this.imgContainer = document.getElementById("img-container");
-    this.preview = document.getElementById("preview");
+    this.imgContainer = getElementById("img-container");
+    this.preview = getElementById("preview");
     this.dropHint = this.imgContainer.querySelector("p");
-    this.spinner = document.getElementById("spinner");
-    this.fileInput = document.getElementById("import-file-input");
+    this.spinner = getElementById("spinner");
+    this.fileInput = getElementById("import-file-input");
 
     this.imageExtensions = [".png", ".jpg", ".jpeg", ".webp", ".svg"];
 

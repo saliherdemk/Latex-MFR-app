@@ -7,7 +7,7 @@ class CanvasManager {
     this.panY = 0;
     this.zoom = 1;
 
-    this.canvasContainer = document.getElementById("canvas-container");
+    this.canvasContainer = getElementById("canvas-container");
   }
 
   setPan(x, y) {
@@ -59,6 +59,7 @@ class CanvasManager {
   }
 
   getImageBase64() {
+    if (this.strokes.length === 0) return null;
     const dataUrl = this.canvas.elt.toDataURL("image/png");
     return dataUrl.split(",")[1];
   }

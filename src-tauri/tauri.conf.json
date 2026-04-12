@@ -33,10 +33,6 @@
       "icons/icon.icns",
       "icons/icon.ico"
     ],
-    "resources": [
-      "models/pix2text-mfr-1.5-encoder.onnx",
-      "models/pix2text-mfr-1.5-decoder.onnx",
-      "models/pix2text-mfr-1.5-tokenizer.json"
-    ]
+    "resources": []
   }
 }
