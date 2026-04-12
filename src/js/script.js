@@ -4,6 +4,8 @@ const getElementById = (id) => document.getElementById(id);
 const switchCanvas = getElementById("switch-canvas");
 const switchImg = getElementById("switch-img");
 const convertBtn = getElementById("convert-btn");
+const revertBtn = getElementById("revert-btn");
+const clearBtn = getElementById("clear-btn");
 
 const canvasManager = new CanvasManager();
 const imageManager = new ImageManager();
@@ -11,11 +13,19 @@ const modelManager = new ModelManager();
 const manager = new Manager();
 
 document.addEventListener("keydown", (e) => {
-  if (e.ctrlKey && e.key === "z" && !["INPUT", "TEXTAREA"].includes(document.activeElement.tagName)) {
+  if (
+    e.ctrlKey &&
+    e.key === "z" &&
+    !["INPUT", "TEXTAREA"].includes(document.activeElement.tagName)
+  ) {
     e.preventDefault();
     canvasManager.undo();
   }
-  if (e.ctrlKey && e.key === "v" && !["INPUT", "TEXTAREA"].includes(document.activeElement.tagName)) {
+  if (
+    e.ctrlKey &&
+    e.key === "v" &&
+    !["INPUT", "TEXTAREA"].includes(document.activeElement.tagName)
+  ) {
     e.preventDefault();
     imageManager.setState("loading");
     invoke("read_clipboard_image")
@@ -24,6 +34,14 @@ document.addEventListener("keydown", (e) => {
       )
       .catch(() => imageManager.setState("empty"));
   }
+});
+
+revertBtn.addEventListener("click", () => {
+  canvasManager.undo();
+});
+
+clearBtn.addEventListener("click", () => {
+  canvasManager.clear();
 });
 
 switchCanvas.addEventListener("click", () => {

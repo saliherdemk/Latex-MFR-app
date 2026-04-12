@@ -52,6 +52,11 @@ class CanvasManager {
     this.strokes.pop();
   }
 
+  clear() {
+    this.strokes = [];
+    this.currentStroke = null;
+  }
+
   getCanvasDimensions() {
     const w = this.canvasContainer.offsetWidth;
     const h = this.canvasContainer.offsetHeight;

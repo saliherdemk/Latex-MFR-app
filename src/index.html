@@ -28,7 +28,43 @@
 
       <div id="pic-container">
         <div id="convert-spinner"></div>
-        <div id="canvas-container"></div>
+        <div id="canvas-container">
+          <div id="canvas-actions">
+            <button id="revert-btn" type="button" title="Undo">
+              <svg
+                xmlns="http://www.w3.org/2000/svg"
+                width="16"
+                height="16"
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+                stroke-width="2"
+                stroke-linecap="round"
+                stroke-linejoin="round"
+              >
+                <path d="M3 7v6h6" />
+                <path d="M21 17a9 9 0 0 0-9-9 9 9 0 0 0-6 2.3L3 13" />
+              </svg>
+            </button>
+            <button id="clear-btn" type="button" title="Clear">
+              <svg
+                xmlns="http://www.w3.org/2000/svg"
+                width="16"
+                height="16"
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+                stroke-width="2"
+                stroke-linecap="round"
+                stroke-linejoin="round"
+              >
+                <path d="M3 6h18" />
+                <path d="M8 6V4h8v2" />
+                <path d="M19 6l-1 14H6L5 6" />
+              </svg>
+            </button>
+          </div>
+        </div>
         <div id="img-container">
           <div id="spinner"></div>
           <p>Drag and drop, paste, or click to choose</p>

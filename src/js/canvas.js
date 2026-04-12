@@ -12,7 +12,8 @@ function setup() {
   });
 }
 
-function mousePressed() {
+function mousePressed(event) {
+  if (event.target !== document.querySelector("canvas")) return;
   if (mouseX >= 0 && mouseX <= width && mouseY >= 0 && mouseY <= height) {
     canvasManager.drawingActive = true;
   }
