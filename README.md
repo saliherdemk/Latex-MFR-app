@@ -1,4 +1,4 @@
-# LaTeX OCR
+# LaTeX MFR
 
 A desktop application for converting math formula images into LaTeX.
 
