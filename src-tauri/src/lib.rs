@@ -2,53 +2,14 @@ mod models;
 
 use base64::{engine::general_purpose, Engine as _};
 use ort::session::Session;
-use std::collections::HashMap;
-use std::io::{Read, Write};
 use std::path::PathBuf;
 use std::sync::Mutex;
-use tauri::{Emitter, Manager};
+use tauri::Manager;
 use tauri_plugin_clipboard_manager::ClipboardExt;
 
-struct CatalogEntry {
-    id: &'static str,
-    name: &'static str,
-    filename: &'static str,
-    url: Option<&'static str>,
-}
-
-const CATALOG: &[CatalogEntry] = &[
-    CatalogEntry {
-        id: "pp-formulanet_plus-l",
-        name: "PP-FormulaNet Plus L",
-        filename: "pp-formulanet_plus-l.onnx",
-        url: None,
-    },
-    CatalogEntry {
-        id: "unimernet",
-        name: "UniMERNet",
-        filename: "unimernet.onnx",
-        url: Some("https://github.com/GreatV/oar-ocr/releases/download/v0.3.0/unimernet.onnx"),
-    },
-];
-
-#[derive(serde::Serialize)]
-struct ModelInfo {
-    id: String,
-    name: String,
-    available: bool,
-    downloadable: bool,
-}
-
-#[derive(serde::Serialize, Clone)]
-struct DownloadProgress {
-    id: String,
-    downloaded: u64,
-    total: Option<u64>,
-}
-
 pub struct ModelRegistry {
-    pub sessions: Mutex<HashMap<String, Session>>,
-    pub models_dir: PathBuf,
+    pub encoder: Mutex<Session>,
+    pub decoder: Mutex<Session>,
     pub tokenizer_path: PathBuf,
 }
 
@@ -86,127 +47,20 @@ fn save_temp_image(base64_data: String) -> Result<String, String> {
 }
 
 #[tauri::command]
-fn get_models(state: tauri::State<ModelRegistry>) -> Vec<ModelInfo> {
-    CATALOG
-        .iter()
-        .map(|entry| {
-            let available = if entry.url.is_none() {
-                true
-            } else {
-                state.models_dir.join(entry.filename).exists()
-            };
-            ModelInfo {
-                id: entry.id.to_string(),
-                name: entry.name.to_string(),
-                available,
-                downloadable: entry.url.is_some(),
-            }
-        })
-        .collect()
+async fn convert_gemini(base64: String, api_key: String) -> Result<String, String> {
+    models::gemini_convert(&base64, &api_key)
 }
 
 #[tauri::command]
-async fn download_model(
-    id: String,
-    app: tauri::AppHandle,
-    state: tauri::State<'_, ModelRegistry>,
-) -> Result<(), String> {
-    let entry = CATALOG
-        .iter()
-        .find(|e| e.id == id)
-        .ok_or_else(|| format!("Unknown model: {}", id))?;
-    let url = entry
-        .url
-        .ok_or_else(|| "Model is bundled, no download needed".to_string())?;
-
-    let dest = state.models_dir.join(entry.filename);
-
-    let mut response = ureq::get(url).call().map_err(|e| e.to_string())?;
-
-    let total = response
-        .headers()
-        .get("content-length")
-        .and_then(|v| v.to_str().ok())
-        .and_then(|s| s.parse::<u64>().ok());
-
-    let mut file = std::fs::File::create(&dest).map_err(|e| e.to_string())?;
-    let mut reader = response.body_mut().as_reader();
-    let mut buf = [0u8; 65536];
-    let mut downloaded = 0u64;
-
-    loop {
-        let n = reader.read(&mut buf).map_err(|e| e.to_string())?;
-        if n == 0 {
-            break;
-        }
-        file.write_all(&buf[..n]).map_err(|e| e.to_string())?;
-        downloaded += n as u64;
-        app.emit(
-            "download-progress",
-            DownloadProgress {
-                id: id.clone(),
-                downloaded,
-                total,
-            },
-        )
-        .ok();
-    }
-
-    let session = Session::builder()
-        .map_err(|e| e.to_string())?
-        .commit_from_file(&dest)
-        .map_err(|e| e.to_string())?;
-
-    state.sessions.lock().unwrap().insert(id, session);
-
-    Ok(())
-}
-
-#[tauri::command]
-fn delete_model(id: String, state: tauri::State<ModelRegistry>) -> Result<(), String> {
-    let entry = CATALOG
-        .iter()
-        .find(|e| e.id == id)
-        .ok_or_else(|| format!("Unknown model: {}", id))?;
-
-    if entry.url.is_none() {
-        return Err("Cannot delete a bundled model".to_string());
-    }
-
-    let path = state.models_dir.join(entry.filename);
-    if path.exists() {
-        std::fs::remove_file(&path).map_err(|e| e.to_string())?;
-    }
-
-    state.sessions.lock().unwrap().remove(&id);
-
-    Ok(())
-}
-
-#[tauri::command]
-fn convert(
-    model_id: String,
-    image_path: String,
-    state: tauri::State<ModelRegistry>,
-) -> Result<String, String> {
-    let mut sessions = state.sessions.lock().unwrap();
-    let session = sessions
-        .get_mut(&model_id)
-        .ok_or_else(|| format!("Model not loaded: {}", model_id))?;
-
-    match model_id.as_str() {
-        "pp-formulanet_plus-l" => models::ppformulanet(
-            session,
-            &image_path,
-            state.tokenizer_path.to_str().unwrap_or(""),
-        ),
-        "unimernet" => models::unimernet(
-            session,
-            &image_path,
-            state.tokenizer_path.to_str().unwrap_or(""),
-        ),
-        _ => Err(format!("Unknown model: {}", model_id)),
-    }
+fn convert(image_path: String, state: tauri::State<ModelRegistry>) -> Result<String, String> {
+    let mut encoder = state.encoder.lock().unwrap();
+    let mut decoder = state.decoder.lock().unwrap();
+    models::pix2text_mfr(
+        &mut encoder,
+        &mut decoder,
+        &image_path,
+        state.tokenizer_path.to_str().unwrap_or(""),
+    )
 }
 
 #[cfg_attr(mobile, tauri::mobile_entry_point)]
@@ -215,35 +69,21 @@ pub fn run() {
         .plugin(tauri_plugin_opener::init())
         .plugin(tauri_plugin_clipboard_manager::init())
         .setup(|app| {
-            let bundled_model_path = app.path().resolve(
-                "models/pp-formulanet_plus-l.onnx",
-                tauri::path::BaseDirectory::Resource,
-            )?;
+            let resolve = |name: &str| {
+                app.path()
+                    .resolve(name, tauri::path::BaseDirectory::Resource)
+            };
 
-            let tokenizer_path = app.path().resolve(
-                "models/unimernet_tokenizer.json",
-                tauri::path::BaseDirectory::Resource,
-            )?;
+            let encoder_path = resolve("models/pix2text-mfr-1.5-encoder.onnx")?;
+            let decoder_path = resolve("models/pix2text-mfr-1.5-decoder.onnx")?;
+            let tokenizer_path = resolve("models/pix2text-mfr-1.5-tokenizer.json")?;
 
-            let models_dir = app.path().app_data_dir()?.join("models");
-            std::fs::create_dir_all(&models_dir)?;
-
-            let session = Session::builder()?.commit_from_file(&bundled_model_path)?;
-            let mut sessions = HashMap::new();
-            sessions.insert("pp-formulanet_plus-l".to_string(), session);
-
-            for entry in CATALOG.iter().filter(|e| e.url.is_some()) {
-                let path = models_dir.join(entry.filename);
-                if path.exists() {
-                    if let Ok(s) = Session::builder().and_then(|mut b| b.commit_from_file(&path)) {
-                        sessions.insert(entry.id.to_string(), s);
-                    }
-                }
-            }
+            let encoder = Session::builder()?.commit_from_file(&encoder_path)?;
+            let decoder = Session::builder()?.commit_from_file(&decoder_path)?;
 
             app.manage(ModelRegistry {
-                sessions: Mutex::new(sessions),
-                models_dir,
+                encoder: Mutex::new(encoder),
+                decoder: Mutex::new(decoder),
                 tokenizer_path,
             });
 
@@ -252,10 +92,8 @@ pub fn run() {
         .invoke_handler(tauri::generate_handler![
             read_clipboard_image,
             save_temp_image,
-            get_models,
-            download_model,
-            delete_model,
             convert,
+            convert_gemini,
         ])
         .run(tauri::generate_context!())
         .expect("error while running tauri application");

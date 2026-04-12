@@ -5,6 +5,8 @@ class Manager {
     this.resultContainer = document.getElementById("result-container");
     this.latexInput = document.getElementById("latex-input");
     this.latexPreview = document.getElementById("latex-preview");
+    this.convertSpinner = document.getElementById("convert-spinner");
+    this.convertBtn = document.getElementById("convert-btn");
     this.copyBtn = document.getElementById("copy-btn");
     this.copyBtn.addEventListener("click", () => {
       navigator.clipboard.writeText(this.latexInput.value);
@@ -40,18 +42,37 @@ class Manager {
   }
 
   async convert() {
-    const { invoke } = window.__TAURI__.core;
     let base64;
     if (this.canvasContainer.style.display !== "none") {
       base64 = canvasManager.getImageBase64();
     } else {
       base64 = await imageManager.getImageBase64();
     }
-    if (!base64) return null;
-    const imagePath = await invoke("save_temp_image", { base64Data: base64 });
-    const modelId = modelManager.getSelectedId();
-    const result = await invoke("convert", { modelId, imagePath });
-    console.log("model output:", result);
-    this.showResult(result);
+    if (!base64) return;
+
+    this.convertSpinner.classList.add("active");
+    this.convertBtn.disabled = true;
+
+    try {
+      const modelId = modelManager.getSelectedId();
+
+      if (modelId === "gemini") {
+        const apiKey = modelManager.getGeminiApiKey();
+        if (!apiKey) {
+          alert("Please set a Gemini API key first.");
+          return;
+        }
+        const result = await invoke("convert_gemini", { base64, apiKey });
+        this.showResult(result);
+        return;
+      }
+
+      const imagePath = await invoke("save_temp_image", { base64Data: base64 });
+      const result = await invoke("convert", { imagePath });
+      this.showResult(result);
+    } finally {
+      this.convertSpinner.classList.remove("active");
+      this.convertBtn.disabled = false;
+    }
   }
 }

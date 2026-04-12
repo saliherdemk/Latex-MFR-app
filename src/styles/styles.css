@@ -5,6 +5,32 @@
   margin: 0 auto;
   border-radius: 20px;
   overflow: hidden;
+  position: relative;
+}
+
+#convert-spinner {
+  display: none;
+  position: absolute;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.45);
+  align-items: center;
+  justify-content: center;
+  z-index: 10;
+  border-radius: 20px;
+}
+
+#convert-spinner.active {
+  display: flex;
+}
+
+#convert-spinner::after {
+  content: "";
+  width: 36px;
+  height: 36px;
+  border: 3px solid rgba(255, 255, 255, 0.2);
+  border-top-color: #f6f6f6;
+  border-radius: 50%;
+  animation: spin 0.7s linear infinite;
 }
 
 #canvas-container,
@@ -81,63 +107,56 @@
   display: none;
 }
 
-#delete-model-container {
-  display: none;
-  width: 90%;
-  margin: 0 auto 4px;
+#api-key-btn {
+  flex: 0 0 auto;
 }
 
-#delete-model-container.visible {
-  display: block;
-}
-
-#delete-model-btn {
-  background-color: #5a1a1a98;
-  color: #e05252;
-  border-color: #7a2a2a;
-}
-
-#delete-model-btn:hover {
-  border-color: #e05252;
-}
-
-#download-progress-container {
-  display: none;
-  width: 90%;
-  margin: 0 auto 10px;
-  align-items: center;
-  gap: 10px;
-}
-
-#download-progress-container.active,
-#download-progress-container.error {
+#api-key-modal {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.6);
   display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 100;
 }
 
-#download-error {
-  display: none;
-  font-size: 0.75rem;
-  color: #e05252;
+#api-key-modal-box {
+  background: #1a1a1a;
+  border: 1px solid #333;
+  border-radius: 12px;
+  padding: 24px;
+  width: 340px;
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
 }
 
-#download-progress-container.error #download-progress,
-#download-progress-container.error #download-progress-label {
-  display: none;
+#api-key-modal-box h3 {
+  margin: 0;
+  font-size: 1rem;
+  color: #f6f6f6;
 }
 
-#download-progress-container.error #download-error {
-  display: block;
+#api-key-input {
+  width: 100%;
+  padding: 0.5em 0.7em;
+  border-radius: 6px;
+  border: 1px solid #444;
+  background: #0f0f0f;
+  color: #f6f6f6;
+  font-size: 0.875rem;
+  box-sizing: border-box;
 }
 
-#download-progress {
-  flex: 1;
-  height: 6px;
+#api-key-modal-actions {
+  display: flex;
+  gap: 8px;
+  justify-content: flex-end;
 }
 
-#download-progress-label {
-  font-size: 0.75rem;
-  white-space: nowrap;
-  color: #888;
+#api-key-close-btn {
+  border-color: #444;
 }
 
 #result-container {
