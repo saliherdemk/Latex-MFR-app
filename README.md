@@ -7,6 +7,9 @@ Draw on the canvas, drag & drop an image, paste from the clipboard, or upload a 
 
 ## Demo
 
+<img src="./media/demo.gif">
+
+
 ## Models
 
 - [Pix2Text MFR 1.5](https://huggingface.co/breezedeus/pix2text-mfr-1.5) — offline
