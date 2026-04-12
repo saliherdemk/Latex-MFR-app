@@ -10,6 +10,8 @@ Draw on the canvas, drag & drop an image, paste from the clipboard, or upload a 
 <img src="./media/demo.gif">
 
 
+> **Note:** In my experience, Gemini provides more stable results for handwritten formula recognition.
+
 ## Models
 
 - [Pix2Text MFR 1.5](https://huggingface.co/breezedeus/pix2text-mfr-1.5) — offline
