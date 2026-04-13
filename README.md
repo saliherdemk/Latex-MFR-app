@@ -7,8 +7,7 @@ Draw on the canvas, drag & drop an image, paste from the clipboard, or upload a 
 
 ## Demo
 
-<img src="./media/demo.gif">
-
+https://github.com/user-attachments/assets/81de5d1d-febb-4fb3-b6ef-22ff6c2994eb
 
 > **Note:** In my experience, Gemini provides more stable results for handwritten formula recognition.
 
