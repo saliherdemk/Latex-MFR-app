@@ -25,7 +25,7 @@ You can use Gemini models with a free API key from: https://aistudio.google.com/
 
 ## Download
 
-Prebuilt binaries will be provided for major platforms (Windows, macOS, Linux).
+Prebuilt binaries for Windows, macOS, and Linux are available on the [releases page](https://github.com/saliherdemk/Latex-MFR-app/releases/).
 
 
 ## Local Installation
