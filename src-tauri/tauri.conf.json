@@ -1,8 +1,8 @@
 {
   "$schema": "https://schema.tauri.app/config/2",
-  "productName": "latex",
+  "productName": "latex-mfr",
   "version": "0.1.0",
-  "identifier": "latex",
+  "identifier": "Latex-MFR",
   "build": {
     "frontendDist": "../src"
   },
@@ -10,7 +10,7 @@
     "withGlobalTauri": true,
     "windows": [
       {
-        "title": "latex",
+        "title": "Latex-MFR",
         "width": 800,
         "height": 600
       }
