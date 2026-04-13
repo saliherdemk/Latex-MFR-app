@@ -12,7 +12,7 @@ jobs:
             name: linux
             artifact_path: |
               src-tauri/target/release/bundle
-              src-tauri/target/release/latex-mfr
+              src-tauri/target/release/latexmfr
           - os: windows-latest
             name: windows
             artifact_path: src-tauri/target/release/bundle
